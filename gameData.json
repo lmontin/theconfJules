@@ -1,0 +1,726 @@
+{
+  "characters": [
+    {
+      "id": "CHAR_FELLOWSHIP_FRODO",
+      "name": "Frodo",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 1,
+          "abilities": [
+            {
+              "id": "FRODO_RETREAT",
+              "text": "When defending, may retreat sideways to an adjacent region at the beginning of a battle (not allowed in the mountains)",
+              "trigger": "BATTLE_START",
+              "condition": "IS_DEFENDING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_SAM",
+      "name": "Sam",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 2,
+          "abilities": [
+            {
+              "id": "SAM_SUBSTITUTE",
+              "text": "If in the same region as Frodo and Frodo is attacked first, may be revealed to take Frodo's place",
+              "trigger": "BATTLE_START",
+              "condition": "IS_WITH_FRODO_AND_FRODO_DEFENDING"
+            },
+            {
+              "id": "SAM_STRENGTH_BONUS",
+              "text": "Strength becomes 5 when in the same region as Frodo (if chosen to reveal Frodo)",
+              "trigger": "COMPARE_STRENGTHS",
+              "condition": "IS_WITH_FRODO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_PIPPIN",
+      "name": "Pippin",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 1,
+          "abilities": [
+            {
+              "id": "PIPPIN_RETREAT",
+              "text": "When attacking, may retreat backward to an adjacent region (only at the beginning of a battle)",
+              "trigger": "BATTLE_START",
+              "condition": "IS_ATTACKING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_MERRY",
+      "name": "Merry",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 2,
+          "abilities": [
+            {
+              "id": "MERRY_VS_WITCHKING",
+              "text": "Automatically defeats the Witch-king before card play in battle against him; no other ability effect in other battles",
+              "trigger": "BATTLE_START",
+              "condition": "OPPONENT_IS_WITCHKING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_GANDALF",
+      "name": "Gandalf",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 5,
+          "abilities": [
+            {
+              "id": "GANDALF_REVEAL_CARD",
+              "text": "In battles where cards are played, Sauron must reveal his card first",
+              "trigger": "BEFORE_CARDS"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_ARAGORN",
+      "name": "Aragorn",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 4,
+          "abilities": [
+            {
+              "id": "ARAGORN_SPECIAL_ATTACK_MOVE",
+              "text": "When moving, can move into any adjacent region (forward, sideways, or backward) if he attacks at least one Sauron character",
+              "trigger": "CHECK_MOVE_LEGALITY",
+              "condition": "IS_ATTACKING_MOVE"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_LEGOLAS",
+      "name": "Legolas",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 3,
+          "abilities": [
+            {
+              "id": "LEGOLAS_VS_FLYING_NAZGUL",
+              "text": "In battle with the Flying Nazgûl, defeats the Nazgûl before cards are played",
+              "trigger": "BATTLE_START",
+              "condition": "OPPONENT_IS_FLYING_NAZGUL"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_GIMLI",
+      "name": "Gimli",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 3,
+          "abilities": [
+            {
+              "id": "GIMLI_VS_ORCS",
+              "text": "When battling Orcs, defeats the Orcs before their ability is resolved",
+              "trigger": "BATTLE_START",
+              "condition": "OPPONENT_IS_ORCS"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_FELLOWSHIP_BOROMIR",
+      "name": "Boromir",
+      "faction": "Fellowship",
+      "versions": {
+        "classic": {
+          "strength": 0,
+          "abilities": [
+            {
+              "id": "BOROMIR_MUTUAL_DESTRUCTION",
+              "text": "In battle, both Boromir and the opposing Sauron character are defeated immediately (except against the Warg, where his ability has no effect)",
+              "trigger": "BATTLE_START",
+              "condition": "OPPONENT_IS_NOT_WARG"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_BALROG",
+      "name": "Balrog",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 5,
+          "abilities": [
+            {
+              "id": "BALROG_TUNNEL_AMBUSH",
+              "text": "If in the Caradhras region when the Tunnel of Moria is used by the Fellowship, may defeat the moving Fellowship character immediately without a battle",
+              "trigger": "POST_MOVE",
+              "condition": "IS_IN_CARADHRAS_AND_TUNNEL_USED"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_SHELOB",
+      "name": "Shelob",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 5,
+          "abilities": [
+            {
+              "id": "SHELOB_POST_BATTLE_MOVE",
+              "text": "If Shelob defeats a Fellowship character in battle, she moves to Gondor unless the battle takes place in Gondor; if Gondor is full or occupied by Fellowship characters, Shelob is defeated and removed",
+              "trigger": "BATTLE_END",
+              "condition": "WON_BATTLE_AND_NOT_IN_GONDOR"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_WITCHKING",
+      "name": "Witch-king",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 5,
+          "abilities": [
+            {
+              "id": "WITCHKING_SIDEWAYS_ATTACK",
+              "text": "When moving, can move sideways if attacking; cannot move sideways in mountains",
+              "trigger": "CHECK_MOVE_LEGALITY",
+              "condition": "IS_ATTACKING_MOVE"
+            },
+            {
+              "id": "WITCHKING_FRODO_RETREAT_OPTION",
+              "text": "If encountering Frodo in a sideways attack, Frodo may retreat sideways to the region previously occupied by the Witch-king",
+              "trigger": "BATTLE_START",
+              "condition": "IS_ATTACKING_SIDEWAYS_VS_FRODO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_FLYING_NAZGUL",
+      "name": "Flying Nazgûl",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 3,
+          "abilities": [
+            {
+              "id": "FLYING_NAZGUL_SPECIAL_MOVE",
+              "text": "May move to any region if it is occupied by a single Fellowship character. Can also move sideways in a mountain region if occupied by a Fellowship character",
+              "trigger": "CHECK_MOVE_LEGALITY",
+              "condition": "TARGET_HAS_ONE_FELLOWSHIP"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_BLACK_RIDER",
+      "name": "Black Rider",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 3,
+          "abilities": [
+            {
+              "id": "BLACK_RIDER_LONG_CHARGE",
+              "text": "Can move forward any number of regions if attacking a region with at least one Fellowship character; cannot move into regions already at capacity or with Fellowship characters",
+              "trigger": "CHECK_MOVE_LEGALITY",
+              "condition": "IS_ATTACKING_MOVE"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_SARUMAN",
+      "name": "Saruman",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 4,
+          "abilities": [
+            {
+              "id": "SARUMAN_FORCE_STRENGTH_COMPARISON",
+              "text": "In battle, if the Fellowship character does not retreat, may declare that no cards are played and resolve the battle solely by comparing character strength values",
+              "trigger": "BEFORE_CARDS",
+              "condition": "OPPONENT_DID_NOT_RETREAT"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_ORCS",
+      "name": "Orcs",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 2,
+          "abilities": [
+            {
+              "id": "ORCS_FIRST_STRIKE",
+              "text": "When attacking, defeat the first Fellowship character attacked before other abilities are applied",
+              "trigger": "BATTLE_START",
+              "condition": "IS_ATTACKING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_WARG",
+      "name": "Warg",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 2,
+          "abilities": [
+            {
+              "id": "WARG_NEGATE_ABILITY",
+              "text": "In battle, the opposing Fellowship character's ability has no effect",
+              "trigger": "BATTLE_START"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "CHAR_SAURON_CAVE_TROLL",
+      "name": "Cave Troll",
+      "faction": "Sauron",
+      "versions": {
+        "classic": {
+          "strength": 9,
+          "abilities": [
+            {
+              "id": "CAVE_TROLL_NEGATE_SAURON_CARD",
+              "text": "In battle, Sauron's combat card has no effect; a card must still be played and discarded",
+              "trigger": "RESOLVE_CARDS"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "regions": [
+    {
+      "id": "REGION_THE_SHIRE",
+      "name": "The Shire",
+      "row": 1,
+      "position": 1,
+      "special": "Bag End",
+      "fellowshipAdjacent": ["REGION_ARTHEDAIN", "REGION_CARDOLAN"],
+      "startingCapacityFellowship": 4,
+      "factionCapacity": 4
+    },
+    {
+      "id": "REGION_ARTHEDAIN",
+      "name": "Arthedain",
+      "row": 2,
+      "position": 1,
+      "special": "Bree",
+      "sauronAdjacent": ["REGION_THE_SHIRE"],
+      "fellowshipAdjacent": ["REGION_RHUDAUR", "REGION_EREGION"],
+      "startingCapacityFellowship": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_CARDOLAN",
+      "name": "Cardolan",
+      "row": 2,
+      "position": 2,
+      "sauronAdjacent": ["REGION_THE_SHIRE"],
+      "fellowshipAdjacent": ["REGION_EREGION", "REGION_ENEDWAITH"],
+      "startingCapacityFellowship": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_RHUDAUR",
+      "name": "Rhudaur",
+      "row": 3,
+      "position": 1,
+      "special": "Rivendell",
+      "sauronAdjacent": ["REGION_ARTHEDAIN"],
+      "fellowshipAdjacent": ["REGION_MISTY_MOUNTAINS", "REGION_THE_HIGH_PASS"],
+      "startingCapacityFellowship": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_EREGION",
+      "name": "Eregion",
+      "row": 3,
+      "position": 2,
+      "special": "Tunnel of Moria",
+      "sauronAdjacent": ["REGION_CARDOLAN", "REGION_ARTHEDAIN"],
+      "fellowshipAdjacent": ["REGION_CARADHRAS", "REGION_MISTY_MOUNTAINS"],
+      "fellowshipSpecialForward": ["REGION_FANGORN"],
+      "startingCapacityFellowship": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_ENEDWAITH",
+      "name": "Enedwaith",
+      "row": 3,
+      "position": 3,
+      "sauronAdjacent": ["REGION_CARDOLAN"],
+      "fellowshipAdjacent": ["REGION_CARADHRAS", "REGION_GAP_OF_ROHAN"],
+      "startingCapacityFellowship": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_THE_HIGH_PASS",
+      "name": "The High Pass",
+      "row": 4,
+      "position": 1,
+      "special": "Mountains",
+      "sauronAdjacent": ["REGION_RHUDAUR"],
+      "fellowshipAdjacent": ["REGION_MIRKWOOD"],
+      "startingCapacity": 0,
+      "factionCapacity": 1
+    },
+    {
+      "id": "REGION_MISTY_MOUNTAINS",
+      "name": "Misty Mountains",
+      "row": 4,
+      "position": 2,
+      "special": "Mountains",
+      "sauronAdjacent": ["REGION_EREGION", "REGION_RHUDAUR"],
+      "fellowshipAdjacent": ["REGION_FANGORN", "REGION_MIRKWOOD"],
+      "startingCapacity": 0,
+      "factionCapacity": 1
+    },
+    {
+      "id": "REGION_CARADHRAS",
+      "name": "Caradhras",
+      "row": 4,
+      "position": 3,
+      "special": "Mountains",
+      "sauronAdjacent": ["REGION_ENEDWAITH", "REGION_EREGION"],
+      "fellowshipAdjacent": ["REGION_FANGORN", "REGION_ROHAN"],
+      "startingCapacity": 0,
+      "factionCapacity": 1
+    },
+    {
+      "id": "REGION_GAP_OF_ROHAN",
+      "name": "Gap of Rohan",
+      "row": 4,
+      "position": 4,
+      "special": ["Isenguard", "Helms Deep", "Mountains"],
+      "sauronAdjacent": ["REGION_ENEDWAITH"],
+      "fellowshipAdjacent": ["REGION_ROHAN"],
+      "startingCapacity": 0,
+      "factionCapacity": 1
+    },
+    {
+      "id": "REGION_MIRKWOOD",
+      "name": "Mirkwood",
+      "row": 5,
+      "position": 1,
+      "special": "Dol Guldur",
+      "sauronAdjacent": ["REGION_MISTY_MOUNTAINS", "REGION_THE_HIGH_PASS"],
+      "fellowshipAdjacent": ["REGION_DAGORLAD"],
+      "fellowshipSpecialForward": ["REGION_FANGORN"],
+      "startingCapacitySauron": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_FANGORN",
+      "name": "Fangorn",
+      "row": 5,
+      "position": 2,
+      "special": "Lothlorian",
+      "sauronAdjacent": ["REGION_MISTY_MOUNTAINS", "REGION_CARADHRAS"],
+      "fellowshipAdjacent": ["REGION_GONDOR", "REGION_DAGORLAD"],
+      "fellowshipSpecialForward": ["REGION_ROHAN"],
+      "startingCapacitySauron": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_ROHAN",
+      "name": "Rohan",
+      "row": 5,
+      "position": 3,
+      "special": "Edoras",
+      "sauronAdjacent": ["REGION_GAP_OF_ROHAN", "REGION_CARADHRAS"],
+      "fellowshipAdjacent": ["REGION_GONDOR"],
+      "startingCapacitySauron": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_DAGORLAD",
+      "name": "Dagorlad",
+      "row": 6,
+      "position": 1,
+      "sauronAdjacent": ["REGION_FANGORN", "REGION_MIRKWOOD"],
+      "fellowshipAdjacent": ["REGION_MORDOR"],
+      "startingCapacitySauron": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_GONDOR",
+      "name": "Gondor",
+      "row": 6,
+      "position": 2,
+      "special": "Shelobs Lair",
+      "sauronAdjacent": ["REGION_FANGORN", "REGION_ROHAN"],
+      "fellowshipAdjacent": ["REGION_MORDOR"],
+      "startingCapacitySauron": 1,
+      "factionCapacity": 2
+    },
+    {
+      "id": "REGION_MORDOR",
+      "name": "Mordor",
+      "row": 7,
+      "position": 1,
+      "special": ["Mount Doom", "Barad Dur"],
+      "sauronAdjacent": ["REGION_GONDOR", "REGION_DAGORLAD"],
+      "startingCapacitySauron": 4,
+      "factionCapacity": 4
+    }
+  ],
+  "combatCards": [
+    {
+      "id": "CARD_FELLOWSHIP_MAGIC",
+      "name": "Magic",
+      "faction": "Fellowship",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_FELLOWSHIP_MAGIC",
+          "text": "Swap with a discarded card. Resolve immediately if replacement is text. No effect if no discards. If both play Magic, Sauron resolves first.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "HAS_DISCARDS"
+        }
+      ],
+      "resolutionOrder": 1
+    },
+    {
+      "id": "CARD_FELLOWSHIP_NOBLE_SACRIFICE",
+      "name": "Noble Sacrifice",
+      "faction": "Fellowship",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_NOBLE_SACRIFICE",
+          "text": "Both battling characters are defeated unless Sauron retreats first.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "SAURON_DID_NOT_RETREAT_VIA_CARD"
+        }
+      ],
+      "resolutionOrder": 2
+    },
+    {
+      "id": "CARD_FELLOWSHIP_ELVEN_CLOAK",
+      "name": "Elven Cloak",
+      "faction": "Fellowship",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_ELVEN_CLOAK",
+          "text": "Negates Sauron's strength card value (including a strength card swapped in via Magic).",
+          "trigger": "COMPARE_STRENGTHS",
+          "condition": "SAURON_PLAYED_STRENGTH_CARD"
+        }
+      ],
+      "resolutionOrder": 3
+    },
+    {
+      "id": "CARD_FELLOWSHIP_RETREAT",
+      "name": "Retreat",
+      "faction": "Fellowship",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_FELLOWSHIP_RETREAT",
+          "text": "Fellowship character must retreat backward if a legal retreat is available.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "LEGAL_BACKWARD_RETREAT_AVAILABLE"
+        }
+      ],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_FELLOWSHIP_STRENGTH_1",
+      "name": "1",
+      "faction": "Fellowship",
+      "cardType": "strength",
+      "strength": 1,
+      "abilities": [],
+      "resolutionOrder": 5
+    },
+    {
+      "id": "CARD_FELLOWSHIP_STRENGTH_2",
+      "name": "2",
+      "faction": "Fellowship",
+      "cardType": "strength",
+      "strength": 2,
+      "abilities": [],
+      "resolutionOrder": 5
+    },
+    {
+      "id": "CARD_FELLOWSHIP_STRENGTH_3",
+      "name": "3",
+      "faction": "Fellowship",
+      "cardType": "strength",
+      "strength": 3,
+      "abilities": [],
+      "resolutionOrder": 5
+    },
+    {
+      "id": "CARD_FELLOWSHIP_STRENGTH_4",
+      "name": "4",
+      "faction": "Fellowship",
+      "cardType": "strength",
+      "strength": 4,
+      "abilities": [],
+      "resolutionOrder": 5
+    },
+    {
+      "id": "CARD_FELLOWSHIP_STRENGTH_5",
+      "name": "5",
+      "faction": "Fellowship",
+      "cardType": "strength",
+      "strength": 5,
+      "abilities": [],
+      "resolutionOrder": 5
+    },
+    {
+      "id": "CARD_SAURON_MAGIC",
+      "name": "Magic",
+      "faction": "Sauron",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_SAURON_MAGIC",
+          "text": "Swap with a discarded card. Resolve immediately if replacement is text. No effect if no discards. If both play Magic, Sauron resolves first.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "HAS_DISCARDS"
+        }
+      ],
+      "resolutionOrder": 1
+    },
+    {
+      "id": "CARD_SAURON_EYE_OF_SAURON",
+      "name": "Eye of Sauron",
+      "faction": "Sauron",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_EYE_OF_SAURON",
+          "text": "Negates the Fellowship's text card effect.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "FELLOWSHIP_PLAYED_TEXT_CARD"
+        }
+      ],
+      "resolutionOrder": 2
+    },
+    {
+      "id": "CARD_SAURON_RETREAT",
+      "name": "Retreat",
+      "faction": "Sauron",
+      "cardType": "text",
+      "strength": null,
+      "abilities": [
+        {
+          "id": "CARD_SAURON_RETREAT",
+          "text": "Sauron character must retreat sideways if a legal retreat is available.",
+          "trigger": "RESOLVE_CARDS",
+          "condition": "LEGAL_SIDEWAYS_RETREAT_AVAILABLE"
+        }
+      ],
+      "resolutionOrder": 3
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_1",
+      "name": "1",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 1,
+      "abilities": [],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_2",
+      "name": "2",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 2,
+      "abilities": [],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_3",
+      "name": "3",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 3,
+      "abilities": [],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_4",
+      "name": "4",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 4,
+      "abilities": [],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_5",
+      "name": "5",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 5,
+      "abilities": [],
+      "resolutionOrder": 4
+    },
+    {
+      "id": "CARD_SAURON_STRENGTH_6",
+      "name": "6",
+      "faction": "Sauron",
+      "cardType": "strength",
+      "strength": 6,
+      "abilities": [],
+      "resolutionOrder": 4
+    }
+  ]
+}
