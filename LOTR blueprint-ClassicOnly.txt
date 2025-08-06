@@ -1,0 +1,188 @@
+# Blueprint for LOTR: The Confrontation (Classic Only)
+
+## Key Notes
+– Human (Fellowship) vs AI (Sauron)  
+
+Static vs. Dynamic Data
+Static Definitions (gamedata.json)
+• regions – immutable layout and capacities:
+– name (string)
+– row, position (int)
+– adjacency lists: fellowshipAdjacent, sauronAdjacent (string[])
+– special (string or string[])
+– capacities: startingCapacityFellowship, startingCapacitySauron, factionCapacity
+• characters – fixed stats and abilities by version:
+– name, faction
+– versions.classic.strength (int)
+– versions.classic.abilities[] where each ability has:
+• id, text, trigger, optional condition
+• combatCards – text & strength cards:
+– name, faction, cardType ("text" or "strength"), strength (int|null)
+– abilities[] (same shape as character abilities)
+– resolutionOrder (int)
+These three arrays in your JSON are the sole source of what exists in the game. You never mutate them at runtime.
+Runtime State (GameState)
+The GameState class (and related sub-objects) holds instances of those blueprints plus all the mutable, per-game data:
+• characterLocations: map each character’s name → current region name
+• regionOccupants: map each region’s name → list of character names occupying it
+• players: each with
+– hand: CombatCard[] (drawn from the faction’s combatCards)
+– deck: CombatCard[] remaining
+– discard: CombatCard[]
+• turn info, pending battles, active triggers, etc.
+Every time you move a character, draw a card, or resolve an ability, you update GameState—you never alter the JSON data.
+
+– Strict battle order:  
+   1) Reveal  
+   2) Resolve character abilities (Fellowship → Sauron)  
+   3) Resolve text‐card effects (Sauron → Fellowship)  
+   4) Compare strengths  
+   5) Defeat lowest (both if tie)  
+– Movement honors forward, tunnel vs river, mountain/sideways rules, capacity, retreats  
+– AI choice stubs (TODO: implement heuristics)  
+– Context flags reset at battle start  
+
+## Core Ability System
+
+FUNCTION TRIGGER_EFFECTS(event, context):
+    sources = GET_RELEVANT_SOURCES(event, context)
+
+    IF event IN ["BATTLE_START","BEFORE_CARDS","COMPARE_STRENGTHS","BATTLE_END"]:
+        # Order: Fellowship characters → Sauron characters
+        fellowship = FILTER(sources, s→s.faction=="Fellowship")
+        sauron    = FILTER(sources, s→s.faction=="Sauron")
+        sources = fellowship + sauron
+
+    IF event == "RESOLVE_CARDS":
+        # Text effects: Sauron first, then Fellowship
+        textOrder = []
+        IF context.battle.sauronCard.isTextCard():       textOrder += [context.battle.sauronCard]
+        IF context.battle.fellowshipCard.isTextCard():  textOrder += [context.battle.fellowshipCard]
+        sources = textOrder
+
+    FOR src IN sources:
+        IF NOT src OR src.isDefeated: CONTINUE
+        FOR ability IN src.ability_details:
+            IF ability.trigger == event AND check_condition(src, ability.condition, context):
+                result = dispatch_ability(ability.id, src, context)
+                IF result IN ["RETREAT","DEFEAT"] OR context.battle_ended_early:
+                    RETURN
+
+FUNCTION check_condition(src, code, context) → bool:
+    # (Same as before, unchanged. Handles all JSON conditions, uses getValidRetreatDestinations, etc.)
+
+FUNCTION dispatch_ability(id, src, ctx) → string:
+    handlers = { "FRODO_RETREAT":..., "CARD_EYE_OF_SAURON":... /* full map */ }
+    IF id IN handlers: RETURN handlers[id](src, ctx)
+
+FUNCTION GET_RELEVANT_SOURCES(event, ctx) → list:
+    out = []
+    b = ctx.battle
+    IF event IN ["BATTLE_START","BEFORE_CARDS","COMPARE_STRENGTHS","BATTLE_END"] AND b:
+        out += [b.attacker, b.defender]
+    IF event=="RESOLVE_CARDS" AND b:
+        out += [b.attackerCard, b.defenderCard]
+    IF event IN ["CHECK_MOVE_LEGALITY","POST_MOVE"] AND ctx.character:
+        out += [ctx.character]
+    RETURN out
+
+## Movement with Special Paths & Abilities
+
+FUNCTION checkMovementLegality(char, dest, ctx) → (bool,ctx):
+    cur = char.location
+    adj  = dest IN cur.getAdjacentRegions()
+    fwd  = dest IN cur.forwardRegions(char.faction)
+    tunnel = dest IN cur.specialPaths("TUNNEL", char.faction)
+    river  = dest IN cur.specialPaths("RIVER", char.faction)
+    sideways = dest IN cur.getSidewaysRegions()
+    base = (adj AND fwd) OR tunnel OR river
+    IF cur.isMountain AND sideways AND NOT tunnel: base = False
+    IF dest.containsEnemy(char.faction) AND NOT tunnel: base = False
+
+    ctx.move_type = tunnel ? "TUNNEL" : river ? "RIVER" : (dest.containsEnemy(char.faction) ? "ATTACK" : "REGULAR")
+    ctx.movement_granted_by_ability = False
+    ctx.can_enter_enemy_region = False
+    ctx.can_move_sideways_in_mountain = False
+    TRIGGER_EFFECTS("CHECK_MOVE_LEGALITY", ctx)
+
+    final = base OR ctx.movement_granted_by_ability
+    IF dest.containsEnemy(char.faction) AND NOT ctx.can_enter_enemy_region: final = False
+    IF cur.isMountain AND sideways AND NOT ctx.can_move_sideways_in_mountain: final = False
+
+    RETURN final, ctx
+
+FUNCTION moveCharacter(char, dest):
+    allowed, ctx = checkMovementLegality(char, dest, {"character":char,"destination":dest,"game":game})
+    IF NOT allowed OR dest.isFull(char.faction): RETURN False
+    char.location.remove(char); dest.add(char); char.location = dest
+    ctx["battle"] = None; ctx.move_type = ctx.move_type
+    TRIGGER_EFFECTS("POST_MOVE", ctx)
+    IF char.isDefeated: RETURN True
+    IF dest.containsEnemy(char.faction):
+        resolveAllBattlesInRegion(dest, game)
+    RETURN True
+
+## Battle Resolution (Strict Order)
+
+FUNCTION initiateBattle(attacker, defender):
+    b = NEW Battle(attacker, defender); game = GET_GAME()
+    # Reset context
+    ctx = { battle:b, attacker:attacker, defender:defender,
+            fellowshipCharacter: defender.faction=="Fellowship"? defender:attacker,
+            sauronCharacter: defender.faction=="Sauron"? defender:attacker,
+            battle_ended_early:false, skip_card_play:false,
+            sauron_retreated_by_card:false, opponent_retreated_by_ability:false,
+            negate_sauron_card_effect:false, negate_fellowship_text:false,
+            negate_sauron_strength:false }
+
+    PRINT "Battle Start"
+    # 1) Reveal
+    CALL revealCharacter(attacker); revealCharacter(defender)
+
+    # 2) Character Abilities
+    TRIGGER_EFFECTS("BATTLE_START", ctx)
+    IF attacker.isDefeated OR defender.isDefeated: END_BATTLE(b,ctx); RETURN
+
+    # 3) Text–Card Effects
+    TRIGGER_EFFECTS("BEFORE_CARDS", ctx)
+    IF NOT ctx.skip_card_play:
+        # choose & discard
+        fCard = ctx.fellowshipCharacter.player.chooseCard(ctx)
+        sCard = ctx.sauronCharacter.player.chooseCard(ctx)
+        b.fellowshipCard = fCard; b.sauronCard = sCard
+        playCard(fCard); playCard(sCard)
+        TRIGGER_EFFECTS("RESOLVE_CARDS", ctx)
+        IF attacker.isDefeated OR defender.isDefeated: END_BATTLE(b,ctx); RETURN
+
+    # 4) Compare Strengths
+    TRIGGER_EFFECTS("COMPARE_STRENGTHS", ctx)
+    aStr = calculateFinalStrength(attacker, b.attackerCard, ctx)
+    dStr = calculateFinalStrength(defender, b.defenderCard, ctx)
+    PRINT "Compare", aStr, dStr
+
+    # 5) Defeat Lowest
+    IF aStr > dStr: defender.defeat(); ctx.battle_outcome="WIN"
+    ELIF dStr > aStr: attacker.defeat(); ctx.battle_outcome="LOSS"
+    ELSE: attacker.defeat(); defender.defeat(); ctx.battle_outcome="DRAW"
+
+    # 6) End‐Battle Abilities (Shelob, etc.)
+    TRIGGER_EFFECTS("BATTLE_END", ctx)
+    END_BATTLE(b, ctx)
+
+## Game Loop
+
+FUNCTION main():
+    game = setupGame("Classic")
+    WHILE NOT game.checkWinConditions():
+        current = game.currentPlayer; opponent = game.getOpponent(current)
+        ctx = {game:game, currentPlayer:current}
+        TRIGGER_EFFECTS("START_TURN", ctx)
+        moved=false; tries=0
+        WHILE NOT moved AND tries<5:
+            char,dest = current.isAI() ? AI_MOVE(game) : PLAYER_MOVE_INPUT(game)
+            moved = moveCharacter(char,dest)
+            tries++
+        IF NOT moved: game.end(opponent); BREAK
+        TRIGGER_EFFECTS("END_TURN",{game:game}); concealAll(game.players)
+        game.currentPlayer = opponent
+    PRINT "Game Over – Winner:", game.checkWinConditions()
