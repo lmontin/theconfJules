@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOTR: The Confrontation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>LOTR: The Confrontation</h1>
+    <div id="game-container">
+        <div id="game-board"></div>
+        <div id="player-info">
+            <div id="turn-indicator"></div>
+            <button id="confirm-play-button" style="display: none;">Confirm Play</button>
+            <div id="fellowship-info">
+                <h2>Fellowship</h2>
+                <h3>Hand</h3>
+                <div id="fellowship-hand" class="card-hand"></div>
+                <h3>Discard</h3>
+                <div id="fellowship-discard" class="card-hand"></div>
+            </div>
+            <div id="sauron-info">
+                <h2>Sauron</h2>
+                <h3>Hand</h3>
+                <div id="sauron-hand" class="card-hand"></div>
+                <h3>Discard</h3>
+                <div id="sauron-discard" class="card-hand"></div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

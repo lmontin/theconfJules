@@ -1,0 +1,167 @@
+body {
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+}
+
+#game-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+#game-board {
+    border: 2px solid black;
+    display: grid;
+    gap: 2px;
+    background-color: #333;
+}
+
+.region {
+    background-color: #fff;
+    padding: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.region-name {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.characters-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    min-height: 64px;
+    width: 100%;
+}
+
+.character {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: white;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0,0,0,0.7);
+    text-shadow: 0 0 2px black;
+}
+
+.character.fellowship {
+    background-color: #007bff;
+    border-color: #ffd700;
+}
+
+.character.sauron {
+    background-color: #dc3545;
+    border-color: #c0c0c0;
+}
+
+.character.selected {
+    box-shadow: 0 0 10px 3px #ffeb3b; /* yellow glow */
+    transform: scale(1.1);
+}
+
+.region.legal-move {
+    background-color: #d4edda; /* light green */
+    cursor: pointer;
+}
+
+#player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#turn-indicator {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#fellowship-info, #sauron-info {
+    border: 2px solid transparent;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#fellowship-info.current-turn {
+    border-color: #007bff;
+    box-shadow: 0 0 10px #007bff;
+}
+
+#sauron-info.current-turn {
+    border-color: #dc3545;
+    box-shadow: 0 0 10px #dc3545;
+}
+
+.card-hand {
+    border: 1px solid black;
+    min-height: 150px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-content: flex-start;
+}
+
+.card {
+    width: 80px;
+    height: 120px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 10px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.card.fellowship {
+    border-color: #007bff;
+}
+
+.card.sauron {
+    border-color: #dc3545;
+}
+
+.card-name {
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-strength {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-text {
+    font-style: italic;
+}
+
+.card.selected {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 10px #ffeb3b;
+    transform: scale(1.05);
+}
