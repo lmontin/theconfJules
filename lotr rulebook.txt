@@ -1,0 +1,171 @@
+
+# Lord of the Rings: The Confrontation
+
+The time has come for the final confrontation in Middle-earth between the free people of the west and the dark lord Sauron. Will the Hobbit Frodo and his companions bring the One Ring to Mount Doom deep in the land of Mordor? Or will their fellowship fall to Sauron's forces and lose Middle-earth to eternal darkness?  
+Only one side can win!
+
+With this copy of *Lord of the Rings: The Confrontation*, you can relive the epic struggle between the Fellowship of the Ring and the minions of Sauron as told in J.R.R. Tolkien's classic fantasy trilogy *The Lord of the Rings*.  
+If you are ready to guide the Fellowship in their dangerous journey to reach Mount Doom, or if you are ready to control the forces of Sauron in their hunt for the One Ring, then read on; adventure and excitement await.
+
+
+## Playing the Classic Game
+
+The rules for playing *Lord of the Rings: The Confrontation* are explained assuming that players are playing the **Classic Game**. 
+
+*Lord of the Rings: The Confrontation* is a two-player game in which one player controls the nine companions of the Fellowship as the **Fellowship**, and the other player controls nine of Sauron’s evil minions as **Sauron**. 
+
+### Setup
+
+Before playing the game for the first time, carefully unpack the cards and separate the cardboard counters from their frames.
+
+1. **Character Setup**:  
+   - The Fellowship slides the nine Fellowship character tiles (with gold numbers) into the light plastic stands.  
+   - Sauron slides the nine Sauron character tiles (with red numbers) into the dark plastic stands.  
+   - Now both players each have nine game pieces called **Characters**.  
+   - In the classic game, the outward-facing characters must all show the **Ring Symbol**.
+
+2. **Combat Cards**:  
+   - Each player takes their nine combat cards into their hand.  
+     - The Fellowship takes the Fellowship cards.  
+     - Sauron takes the Sauron cards.  
+
+3. **Game Board**:  
+   - Place the game board between the two players so that the corner with the Shire points at the Fellowship and the corner with Mordor points towards Sauron.
+
+4. **Placement of Characters**:  
+   - The Fellowship chooses any four of its characters and places them in the Shire, then places its remaining five characters in the five regions in front of the Shire (Arthedain, Cardolan, Enedwaith, Eregion, and Rhudaur), with one character per region.  
+   - Sauron does the same: chooses and places any four of his characters in Mordor, then places his remaining five characters in the five regions in front of Mordor (Gondor, Dagorlad, Fangorn, Mirkwood, and Rohan), with one character per region.  
+   - No characters are placed on mountain regions at the beginning of the game.
+
+5. **Character Cards and Reference Sheets**:  
+   - Each player places their nine character cards in their play area, serving as reminders of character names and abilities.  
+   - Each player takes the reference sheet summarizing the opposing player’s characters and cards.
+
+6. **Concealment**:  
+   - Each character must be placed on the board so that its hidden (opaque) side faces the opposing player. Players only see the identities of their own characters.
+
+---
+
+## Playing the Game
+
+Sauron takes the first turn. Play then alternates between the two players for the rest of the game.
+
+### Movement
+
+During a player’s turn, they must move one of their characters forward using the following rules:
+
+- A character can only move forward to an adjacent region (no sideways or backward movement unless specified by character text, card play, or special rules).  
+- Characters cannot move sideways in the mountains (unless explicitly stated).  
+- Maximum four characters per player in the Shire or Mordor.  
+- Only one character per player in each mountain region.  
+- Maximum two characters per player in every other region.  
+- The **Character Limit Indicator** on the game board shows the number of characters allowed in each region.  
+- Some characters have special movement abilities (see pages 11–14).  
+
+#### Special Movement Options (Fellowship Only):  
+- **The River Anduin**:  
+  - The Fellowship can move characters from Mirkwood to Fangorn, or Fangorn to Rohan (yellow arrows). This counts as a forward move.  
+  - Movement in the opposite direction (Rohan to Fangorn, or Fangorn to Mirkwood) is not allowed unless enabled by a character or card ability (e.g., retreat).  
+- **The Tunnel of Moria**:  
+  - The Fellowship can move characters from Eregion to Fangorn in one move (yellow arrow), but not from Fangorn to Eregion (even when retreating).  
+  - The tunnel can be used even if a Sauron character is in Caradhras.  
+
+When a character is defeated, remove it from the game board and set it aside.
+
+---
+
+### Movement Examples
+
+1. Unless moving into Mordor, the Shire, or along a yellow arrow (Fellowship only), a character must move into one of the two adjacent regions ahead.  
+2. A character cannot move or retreat sideways in the mountains (e.g., Frodo cannot retreat sideways in a mountain battle).  
+3. Only the Fellowship can move forward from Eregion to Fangorn via the Tunnel of Moria (no reverse movement or retreats).  
+4. A character cannot move or retreat into a region already at its maximum character limit for that side.  
+5. Only the Fellowship can move forward along the Anduin River per yellow arrows.  
+6. *(Note: The original text cuts off here. Assume additional examples might follow.)*
+
+---
+
+### Battle
+
+If a character moves into a region occupied by one or more enemy characters, a **Battle** occurs:  
+- The moving piece is **Attacking**.  
+- The opposing piece is **Defending**.  
+- Moving into a region with enemy characters is an **Attack**.
+
+If there are multiple unrevealed opposing characters in the contested region:  
+- The attacking player randomly chooses one unrevealed opponent (defender may shuffle them first).  
+- Alternatively, the attacker may choose a revealed enemy character.
+
+#### Battle Resolution (Four Steps) This process / logic is very important and must be implemented and used the code for every battle:
+
+1. **Reveal Characters**:  
+   - Both players reveal their characters to their opponent.
+
+2. **Resolve Character Abilities (Fellowship, then Sauron) **:  
+   - The Fellowship resolves its character’s ability first, then Sauron (Exception: Warg negates Fellowship abilities).  
+   - Some abilities (e.g., Aragorn’s) don’t affect battle and are ignored here.  
+   - **Retreats**:  
+     - Some Fellowship characters (per their ability) may retreat before Sauron’s ability resolves (except against Warg).  
+     - Retreats must follow normal rules (no enemy regions, no maxed-out regions, no sideways in mountains, no backward through Moria).  
+     - If a character retreats successfully, Sauron’s ability is ignored.  
+     - If a retreat or defeat occurs here, the battle ends (no cards played).
+
+3. **Play Cards**:  
+   - Each player secretly selects a **Combat Card** from their hand and reveals them simultaneously.  
+   - **Text Cards**: Have abilities, resolved before strength cards (Sauron first, then Fellowship).  
+   - If a retreat or defeat occurs via text cards, the battle ends.  
+   - All played cards are discarded, even if ineffective.
+
+4. **Compare Strengths**:  
+   - Add the **Strength Number** of each strength card (if played) to the character’s **Strength Value**.  
+   - The character with the lower total strength is defeated. If equal, both are defeated.  
+   - The battle ends.
+
+#### Combat Card Anatomy. Use and follow this temrinology in the code. 
+
+- **Text Card**: Includes Card Name and Ability.  
+- **Strength Card**: Includes Card Name and Strength Number.
+
+---
+
+### After a Battle
+
+- Discard used cards face-up beside the board.  
+- When all nine cards are used (always simultaneous), both players reclaim all nine cards into their hands.  
+- If additional enemy characters remain in the region, resolve another battle until only one side (or none) occupies it.
+
+#### Conceal Characters
+- At the end of a turn, all revealed characters are concealed (hidden) again, unless specified otherwise (e.g., “Crebain of Dunland” effect).
+
+---
+
+### Game End
+
+The game ends in one of these ways:  
+- **Fellowship Wins**: Frodo enters Mordor (no battle, even if Sauron characters are present).  
+- **Sauron Wins**:  
+  - Three Sauron characters enter the Shire, or  
+  - Frodo (classic version) is defeated.  
+- **Unable to Move**: If a player cannot move a character forward on their turn, they lose immediately.
+
+---
+
+### Battle Example . Create a test for this scenario 
+
+1. Aragorn attacks a Sauron character in Fangorn from Mirkwood using his ability. Sauron reveals Shelob.  
+2. Neither character’s ability causes retreat or defeat, so players select combat cards:  
+   - Fellowship plays “4”.  
+   - Sauron plays “Eye of Sauron” (no effect, as Fellowship played a strength card).  
+3. Fellowship: Aragorn (4) + “4” = 8. Sauron: Shelob (5) + no strength = 5. Aragorn wins; Shelob is defeated.
+
+---
+
+
+## Clarifications. Use and follow this temrinology in the code. 
+- **Concealed**: Opaque side faces opponent. **Revealed**: Laid face-up.  
+- **Choosing**: Targets a character on the board (no reveal unless stated).  
+- **Re-revealing**: Revealed characters stay revealed if “revealed” again.  
+- **Open Info**: Defeated characters, discard piles.  
+- **Retreats**: Not defeats.  
+- **Empty Region**: No characters.  
+
