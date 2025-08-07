@@ -138,6 +138,7 @@ class GameState {
             log: []
         };
         console.log('Battle initiated:', this.battle);
+        updateBattleModal();
         this.battle.phase = 'character_abilities';
         this.resolveBattleStep();
     }
@@ -192,8 +193,7 @@ class GameState {
             this.resolveBattleStep();
         } else if (phase === 'compare_strengths') {
             this.compareStrengths();
-            this.battle = null; // End of battle
-            renderCharacters();
+            // The battle object is now cleared when the 'Continue' button on the modal is clicked.
         }
     }
 
@@ -218,14 +218,23 @@ class GameState {
 
         console.log(`Final Strengths - Attacker: ${attackerStrength}, Defender: ${defenderStrength}`);
 
+        const resultEl = document.getElementById('battle-result');
+        let resultMessage = '';
+
         if (attackerStrength > defenderStrength) {
             this.defeatCharacter(this.battle.defenderId);
+            resultMessage = `${attacker.name} defeats ${defender.name}!`;
         } else if (defenderStrength > attackerStrength) {
             this.defeatCharacter(this.battle.attackerId);
+            resultMessage = `${defender.name} defeats ${attacker.name}!`;
         } else {
             this.defeatCharacter(this.battle.attackerId);
             this.defeatCharacter(this.battle.defenderId);
+            resultMessage = `Both ${attacker.name} and ${defender.name} are defeated!`;
         }
+
+        resultEl.textContent = resultMessage;
+        document.getElementById('battle-continue-button').style.display = 'block';
     }
 
     defeatCharacter(characterId) {
@@ -314,6 +323,16 @@ function initializeGame() {
     renderCards();
     renderDiscardPiles();
     updateTurnIndicator();
+
+    document.getElementById('battle-continue-button').addEventListener('click', () => {
+        document.getElementById('battle-modal').style.display = 'none';
+        document.getElementById('battle-continue-button').style.display = 'none';
+        document.getElementById('battle-result').textContent = '';
+        document.getElementById('attacker-card').innerHTML = '';
+        document.getElementById('defender-card').innerHTML = '';
+        gameState.battle = null;
+        renderCharacters();
+    });
 }
 
 function createGameBoard() {
@@ -514,6 +533,31 @@ function renderDiscardPiles() {
 }
 
 function activateCardSelection() {
+function updateBattleModal() {
+    const battle = gameState.battle;
+    if (!battle) return;
+
+    const modal = document.getElementById('battle-modal');
+    const attacker = gameState.getCharacter(battle.attackerId);
+    const defender = gameState.getCharacter(battle.defenderId);
+    const location = gameState.getRegion(gameState.characterLocations[battle.attackerId]);
+
+    document.getElementById('battle-location').textContent = `Battle at ${location.name}`;
+
+    // Attacker info
+    document.getElementById('attacker-name').textContent = attacker.name;
+    document.getElementById('attacker-strength').textContent = attacker.versions.classic.strength;
+    document.getElementById('attacker-ability').textContent = attacker.versions.classic.abilities.map(a => a.text).join(', ');
+
+    // Defender info
+    document.getElementById('defender-name').textContent = defender.name;
+    document.getElementById('defender-strength').textContent = defender.versions.classic.strength;
+    document.getElementById('defender-ability').textContent = defender.versions.classic.abilities.map(a => a.text).join(', ');
+
+    modal.style.display = 'flex';
+}
+
+function activateCardSelection() {
     const confirmButton = document.getElementById('confirm-play-button');
     confirmButton.style.display = 'block';
 
@@ -545,6 +589,21 @@ function activateCardSelection() {
         gameState.battle.sauronCard = sauronCard;
 
         console.log(`Fellowship plays: ${fellowshipCard.name}, Sauron plays: ${sauronCard.name}`);
+
+        // Update modal with played cards
+        const attackerCardContainer = document.getElementById('attacker-card');
+        const defenderCardContainer = document.getElementById('defender-card');
+        attackerCardContainer.innerHTML = '';
+        defenderCardContainer.innerHTML = '';
+
+        const attacker = gameState.getCharacter(gameState.battle.attackerId);
+        if (attacker.faction === 'Fellowship') {
+            attackerCardContainer.appendChild(createCardElement(fellowshipCard));
+            defenderCardContainer.appendChild(createCardElement(sauronCard));
+        } else {
+            attackerCardContainer.appendChild(createCardElement(sauronCard));
+            defenderCardContainer.appendChild(createCardElement(fellowshipCard));
+        }
 
         // Cleanup
         confirmButton.style.display = 'none';
