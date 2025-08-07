@@ -532,7 +532,7 @@ function renderDiscardPiles() {
     });
 }
 
-function activateCardSelection() {
+
 function updateBattleModal() {
     const battle = gameState.battle;
     if (!battle) return;
