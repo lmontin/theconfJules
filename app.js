@@ -348,48 +348,52 @@ function createGameBoard() {
         return a.position - b.position;
     });
 
-    const maxRow = Math.max(...sortedRegions.map(r => r.row));
-    const maxPos = Math.max(...sortedRegions.map(r => r.position));
+    const regionsByRow = sortedRegions.reduce((acc, region) => {
+        if (!acc[region.row]) {
+            acc[region.row] = [];
+        }
+        acc[region.row].push(region);
+        return acc;
+    }, {});
 
-    gameBoard.style.gridTemplateRows = `repeat(${maxRow}, 120px)`;
-    gameBoard.style.gridTemplateColumns = `repeat(${maxPos}, 120px)`;
+    for (const row in regionsByRow) {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'grid-row';
+        regionsByRow[row].forEach(region => {
+            const regionEl = document.createElement('div');
+            regionEl.id = region.id;
+            regionEl.className = 'region';
 
-    sortedRegions.forEach(region => {
-        const regionEl = document.createElement('div');
-        regionEl.id = region.id;
-        regionEl.className = 'region';
-        regionEl.style.gridRow = region.row;
-        regionEl.style.gridColumn = region.position;
+            const regionNameEl = document.createElement('div');
+            regionNameEl.className = 'region-name';
+            regionNameEl.textContent = region.name;
+            regionEl.appendChild(regionNameEl);
 
-        const regionNameEl = document.createElement('div');
-        regionNameEl.className = 'region-name';
-        regionNameEl.textContent = region.name;
-        regionEl.appendChild(regionNameEl);
+            const charactersContainerEl = document.createElement('div');
+            charactersContainerEl.className = 'characters-container';
+            regionEl.appendChild(charactersContainerEl);
 
-        const charactersContainerEl = document.createElement('div');
-        charactersContainerEl.className = 'characters-container';
-        regionEl.appendChild(charactersContainerEl);
+            regionEl.dataset.region = JSON.stringify(region);
 
-        regionEl.dataset.region = JSON.stringify(region);
+            regionEl.addEventListener('click', () => {
+                if (gameState.selectedCharacterId && regionEl.classList.contains('legal-move')) {
+                    const characterId = gameState.selectedCharacterId;
+                    gameState.moveCharacter(characterId, region.id);
 
-        regionEl.addEventListener('click', () => {
-            if (gameState.selectedCharacterId && regionEl.classList.contains('legal-move')) {
-                const characterId = gameState.selectedCharacterId;
-                gameState.moveCharacter(characterId, region.id);
+                    // After move, update UI
+                    renderCharacters();
+                    gameState.selectedCharacterId = null;
+                    clearLegalMoveHighlights();
 
-                // After move, update UI
-                renderCharacters();
-                gameState.selectedCharacterId = null;
-                clearLegalMoveHighlights();
-
-                // Switch turns
-                gameState.switchTurn();
-                updateTurnIndicator();
-            }
+                    // Switch turns
+                    gameState.switchTurn();
+                    updateTurnIndicator();
+                }
+            });
+            rowEl.appendChild(regionEl);
         });
-
-        gameBoard.appendChild(regionEl);
-    });
+        gameBoard.appendChild(rowEl);
+    }
 }
 
 function renderCharacters() {
@@ -405,8 +409,12 @@ function renderCharacters() {
         characterEl.className = `character ${character.faction.toLowerCase()}`;
 
         const characterName = document.createElement('span');
-        characterName.textContent = character.name.split(' ').map(n => n[0]).join('');
+        const strength = character.versions.classic.strength;
+        characterName.textContent = `${character.name} (${strength})`;
         characterEl.appendChild(characterName);
+
+        const abilities = character.versions.classic.abilities.map(a => a.text).join('\n');
+        characterEl.title = abilities;
 
         characterEl.dataset.character = JSON.stringify(character);
 
