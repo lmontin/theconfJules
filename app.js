@@ -532,6 +532,7 @@ function renderDiscardPiles() {
     });
 }
 
+
 function updateBattleModal() {
     const battle = gameState.battle;
     if (!battle) return;
