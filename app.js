@@ -138,7 +138,7 @@ class GameState {
             log: []
         };
         console.log('Battle initiated:', this.battle);
-        updateBattleModal();
+        updateBattlePanel();
         this.battle.phase = 'character_abilities';
         this.resolveBattleStep();
     }
@@ -325,7 +325,7 @@ function initializeGame() {
     updateTurnIndicator();
 
     document.getElementById('battle-continue-button').addEventListener('click', () => {
-        document.getElementById('battle-modal').style.display = 'none';
+        document.getElementById('battle-panel').style.display = 'none';
         document.getElementById('battle-continue-button').style.display = 'none';
         document.getElementById('battle-result').textContent = '';
         document.getElementById('attacker-card').innerHTML = '';
@@ -532,12 +532,14 @@ function renderDiscardPiles() {
     });
 }
 
-
-function updateBattleModal() {
+function updateBattlePanel() {
     const battle = gameState.battle;
-    if (!battle) return;
+    const panel = document.getElementById('battle-panel');
+    if (!battle) {
+        panel.style.display = 'none';
+        return;
+    }
 
-    const modal = document.getElementById('battle-modal');
     const attacker = gameState.getCharacter(battle.attackerId);
     const defender = gameState.getCharacter(battle.defenderId);
     const location = gameState.getRegion(gameState.characterLocations[battle.attackerId]);
@@ -554,7 +556,7 @@ function updateBattleModal() {
     document.getElementById('defender-strength').textContent = defender.versions.classic.strength;
     document.getElementById('defender-ability').textContent = defender.versions.classic.abilities.map(a => a.text).join(', ');
 
-    modal.style.display = 'flex';
+    panel.style.display = 'block';
 }
 
 function activateCardSelection() {
