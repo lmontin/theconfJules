@@ -79,21 +79,140 @@ class GameState {
         return this.gameData.regions.find(r => r.id === regionId);
     }
 
-    checkMovementLegality(characterId, destinationRegionId) {
+    getLegalMoves(characterId) {
         const character = this.getCharacter(characterId);
         const sourceRegionId = this.characterLocations[characterId];
         const sourceRegion = this.getRegion(sourceRegionId);
-        const destinationRegion = this.getRegion(destinationRegionId);
+        let legalMoves = new Set();
 
-        if (!character || !sourceRegion || !destinationRegion) return false;
+        if (!character || !sourceRegion) return [];
 
-        // For now, simple forward check
+        // --- Standard Moves ---
+        let potentialDestinations = [];
         if (character.faction === 'Fellowship') {
-            return destinationRegion.row > sourceRegion.row;
+            potentialDestinations.push(...(sourceRegion.fellowshipAdjacent || []));
+            potentialDestinations.push(...(sourceRegion.fellowshipSpecialForward || []));
         } else { // Sauron
-            return destinationRegion.row < sourceRegion.row;
+            potentialDestinations.push(...(sourceRegion.sauronAdjacent || []));
         }
-        // TODO: Add more complex rules (adjacency, capacity, special moves)
+
+        for (const destId of potentialDestinations) {
+            legalMoves.add(destId);
+        }
+
+        // --- Ability-Based Moves ---
+        const abilities = character.versions.classic.abilities;
+        for (const ability of abilities) {
+            if (ability.trigger === 'CHECK_MOVE_LEGALITY') {
+                const specialMoves = this.getAbilityMoves(ability.id, character, sourceRegion);
+                specialMoves.forEach(move => legalMoves.add(move));
+            }
+        }
+
+        // --- Final Filtering (Capacity) ---
+        return Array.from(legalMoves).filter(destId => {
+            const destRegion = this.getRegion(destId);
+            if (!destRegion) return false;
+            const factionOccupants = this.regionOccupants[destId][character.faction];
+            return factionOccupants.length < destRegion.factionCapacity;
+        });
+    }
+
+    getAbilityMoves(abilityId, character, sourceRegion) {
+        let moves = [];
+        const allRegions = this.gameData.regions;
+
+        switch (abilityId) {
+            case 'ARAGORN_SPECIAL_ATTACK_MOVE':
+                // Can move to any adjacent region if attacking
+                const allAdjacent = this.getAllAdjacentRegions(sourceRegion.id);
+                for (const regionId of allAdjacent) {
+                    if (this.regionOccupants[regionId]['Sauron'].length > 0) {
+                        moves.push(regionId);
+                    }
+                }
+                break;
+
+            case 'WITCHKING_SIDEWAYS_ATTACK':
+                // Can move sideways if attacking (not in mountains)
+                if (!sourceRegion.special?.includes('Mountains')) {
+                    const sideways = this.getSidewaysRegions(sourceRegion.id);
+                    for (const regionId of sideways) {
+                        if (this.regionOccupants[regionId]['Fellowship'].length > 0) {
+                            moves.push(regionId);
+                        }
+                    }
+                }
+                break;
+
+            case 'FLYING_NAZGUL_SPECIAL_MOVE':
+                // Move to any region with a single Fellowship character
+                for (const region of allRegions) {
+                    if (this.regionOccupants[region.id]['Fellowship'].length === 1) {
+                        moves.push(region.id);
+                    }
+                }
+                // Also sideways in mountains if occupied
+                 if (sourceRegion.special?.includes('Mountains')) {
+                    const sideways = this.getSidewaysRegions(sourceRegion.id);
+                    for (const regionId of sideways) {
+                        if (this.regionOccupants[regionId]['Fellowship'].length > 0) {
+                            moves.push(regionId);
+                        }
+                    }
+                }
+                break;
+
+            case 'BLACK_RIDER_LONG_CHARGE':
+                // Move forward any number of regions to attack
+                let currentRegion = sourceRegion;
+                while (currentRegion) {
+                    const forwardRegionId = currentRegion.sauronAdjacent ? currentRegion.sauronAdjacent[0] : null;
+                    if (!forwardRegionId) break;
+
+                    const forwardRegion = this.getRegion(forwardRegionId);
+                    if (this.regionOccupants[forwardRegionId]['Fellowship'].length > 0) {
+                        moves.push(forwardRegionId);
+                    }
+                     // Stop if the path is blocked by capacity or friendly units
+                    if (this.regionOccupants[forwardRegionId]['Sauron'].length >= forwardRegion.factionCapacity) {
+                        break;
+                    }
+                    currentRegion = forwardRegion;
+                }
+                break;
+        }
+        return moves;
+    }
+
+    getAllAdjacentRegions(regionId) {
+        const region = this.getRegion(regionId);
+        const adjacent = new Set();
+        if (region.fellowshipAdjacent) region.fellowshipAdjacent.forEach(r => adjacent.add(r));
+        if (region.sauronAdjacent) region.sauronAdjacent.forEach(r => adjacent.add(r));
+
+        // Also need to find regions that are adjacent TO this one
+        this.gameData.regions.forEach(r => {
+            if (r.fellowshipAdjacent && r.fellowshipAdjacent.includes(regionId)) adjacent.add(r.id);
+            if (r.sauronAdjacent && r.sauronAdjacent.includes(regionId)) adjacent.add(r.id);
+        });
+
+        adjacent.delete(regionId);
+        return Array.from(adjacent);
+    }
+
+    getSidewaysRegions(regionId) {
+        const sourceRegion = this.getRegion(regionId);
+        const allAdjacent = this.getAllAdjacentRegions(regionId);
+        return allAdjacent.filter(adjId => {
+            const adjRegion = this.getRegion(adjId);
+            return adjRegion.row === sourceRegion.row;
+        });
+    }
+
+    checkMovementLegality(characterId, destinationRegionId) {
+        const legalMoves = this.getLegalMoves(characterId);
+        return legalMoves.includes(destinationRegionId);
     }
 
     moveCharacter(characterId, regionId) {
