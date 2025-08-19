@@ -30,6 +30,7 @@ class GameState {
             Sauron: { hand: [], deck: [], discard: [] }
         };
         this.turn = 'Sauron';
+        this.round = 1;
         this.battle = null;
 
         this._setupInitialState();
@@ -370,6 +371,10 @@ class GameState {
     }
 
     switchTurn() {
+        if (this.turn === 'Fellowship') {
+            this.round++;
+            console.log(`--- Round ${this.round} ---`);
+        }
         this.turn = this.turn === 'Sauron' ? 'Fellowship' : 'Sauron';
         console.log(`Turn switched to ${this.turn}`);
     }
@@ -451,6 +456,10 @@ function initializeGame() {
         document.getElementById('defender-card').innerHTML = '';
         gameState.battle = null;
         renderCharacters();
+
+        // After a battle, the turn should switch.
+        gameState.switchTurn();
+        updateTurnIndicator();
     });
 }
 
@@ -611,7 +620,7 @@ function createCardElement(card) {
 
 function updateTurnIndicator() {
     const turnIndicator = document.getElementById('turn-indicator');
-    turnIndicator.textContent = `Turn: ${gameState.turn}`;
+    turnIndicator.textContent = `Round ${gameState.round} / Turn: ${gameState.turn}`;
 
     // Add classes to player info sections to highlight the current player
     document.getElementById('fellowship-info').classList.remove('current-turn');
