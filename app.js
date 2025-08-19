@@ -501,6 +501,10 @@ function updateTurnIndicator() {
         document.getElementById('fellowship-info').classList.add('current-turn');
     } else {
         document.getElementById('sauron-info').classList.add('current-turn');
+        // If it's Sauron's turn, and no battle is active, let the AI play.
+        if (!gameState.battle) {
+            setTimeout(playSauronTurn, 1000);
+        }
     }
 }
 
@@ -625,4 +629,48 @@ function activateCardSelection() {
         gameState.battle.phase = 'resolve_cards';
         gameState.resolveBattleStep();
     });
+}
+
+function playSauronTurn() {
+    console.log("Sauron is thinking...");
+
+    const sauronCharacters = Object.keys(gameState.characterLocations).filter(id =>
+        gameState.getCharacter(id).faction === 'Sauron'
+    );
+
+    const allMoves = [];
+    for (const characterId of sauronCharacters) {
+        for (const region of gameData.regions) {
+            if (gameState.checkMovementLegality(characterId, region.id)) {
+                allMoves.push({ characterId, regionId: region.id });
+            }
+        }
+    }
+
+    const attackMoves = allMoves.filter(move =>
+        gameState.regionOccupants[move.regionId].Fellowship.length > 0
+    );
+
+    let chosenMove = null;
+    if (attackMoves.length > 0) {
+        console.log("Sauron found attack moves:", attackMoves);
+        chosenMove = attackMoves[Math.floor(Math.random() * attackMoves.length)];
+    } else if (allMoves.length > 0) {
+        console.log("Sauron found non-attack moves:", allMoves);
+        chosenMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+    }
+
+    if (chosenMove) {
+        console.log("Sauron chose move:", chosenMove);
+        gameState.moveCharacter(chosenMove.characterId, chosenMove.regionId);
+        renderCharacters();
+    } else {
+        console.log("Sauron has no legal moves.");
+    }
+
+    // Switch turn back to Fellowship
+    if (!gameState.battle) { // Don't switch turn if a battle was initiated
+        gameState.switchTurn();
+        updateTurnIndicator();
+    }
 }
