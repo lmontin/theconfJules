@@ -3,9 +3,8 @@ name: Deploy static content to Pages
 
 on:
   # Runs on pushes targeting the default branch 
-  # DISABLED as enabling pages creates a default deploy on push to main. 
-  # push:
-  #   branches: ["main"]
+  push:
+    branches: ["main"]
 
   #ADD THIS SECTION to run on Pull Requests targeting the main branch
   pull_request:
