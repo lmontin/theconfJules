@@ -82,6 +82,13 @@ h1 {
     border-color: #c0c0c0;
 }
 
+.character.sauron.hidden {
+    background-image: url('The_Eye_of_Sauron_01.jpg');
+    background-size: cover;
+    background-position: center;
+    color: transparent;
+}
+
 .character.selected {
     box-shadow: 0 0 10px 3px #ffeb3b; /* yellow glow */
     transform: scale(1.1);

@@ -32,6 +32,7 @@ class GameState {
         this.turn = 'Sauron';
         this.round = 1;
         this.battle = null;
+        this.revealedSauronCharacters = new Set();
 
         this._setupInitialState();
     }
@@ -257,6 +258,19 @@ class GameState {
             phase: 'reveal',
             log: []
         };
+
+        // Reveal Sauron character if they are in the battle
+        const attacker = this.getCharacter(attackerId);
+        const defender = this.getCharacter(defenderId);
+        if (attacker.faction === 'Sauron') {
+            this.revealedSauronCharacters.add(attackerId);
+        }
+        if (defender.faction === 'Sauron') {
+            this.revealedSauronCharacters.add(defenderId);
+        }
+
+        renderCharacters(); // Re-render to show revealed character
+
         console.log('Battle initiated:', this.battle);
         updateBattlePanel();
         this.battle.phase = 'character_abilities';
@@ -371,12 +385,17 @@ class GameState {
     }
 
     switchTurn() {
+        // Revealed Sauron characters are hidden again at the end of the turn.
+        // A special ability could prevent this, but is not yet implemented.
+        this.revealedSauronCharacters.clear();
+
         if (this.turn === 'Fellowship') {
             this.round++;
             console.log(`--- Round ${this.round} ---`);
         }
         this.turn = this.turn === 'Sauron' ? 'Fellowship' : 'Sauron';
         console.log(`Turn switched to ${this.turn}`);
+        renderCharacters(); // Re-render to ensure cards are hidden.
     }
 }
 
@@ -536,13 +555,19 @@ function renderCharacters() {
         characterEl.id = character.id;
         characterEl.className = `character ${character.faction.toLowerCase()}`;
 
-        const characterName = document.createElement('span');
-        const strength = character.versions.classic.strength;
-        characterName.textContent = `${character.name} (${strength})`;
-        characterEl.appendChild(characterName);
+        const isSauronAndHidden = character.faction === 'Sauron' && !gameState.revealedSauronCharacters.has(character.id);
 
-        const abilities = character.versions.classic.abilities.map(a => a.text).join('\n');
-        characterEl.title = abilities;
+        if (isSauronAndHidden) {
+            characterEl.classList.add('hidden');
+        } else {
+            const characterName = document.createElement('span');
+            const strength = character.versions.classic.strength;
+            characterName.textContent = `${character.name} (${strength})`;
+            characterEl.appendChild(characterName);
+
+            const abilities = character.versions.classic.abilities.map(a => a.text).join('\n');
+            characterEl.title = abilities;
+        }
 
         characterEl.dataset.character = JSON.stringify(character);
 
